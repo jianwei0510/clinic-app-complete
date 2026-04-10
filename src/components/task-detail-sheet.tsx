@@ -1,8 +1,12 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { CalendarDays, MessageSquare, Send, User as UserIcon } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import {
+	CalendarDays,
+	MessageSquare,
+	Send,
+	User as UserIcon,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
 	Select,
@@ -15,6 +19,7 @@ import { Separator } from "@/components/ui/separator";
 import {
 	Sheet,
 	SheetContent,
+	SheetDescription,
 	SheetHeader,
 	SheetTitle,
 } from "@/components/ui/sheet";
@@ -94,7 +99,10 @@ export function TaskDetailSheet({
 		onUpdate?.();
 	}
 
-	async function handleFieldUpdate(field: string, value: string | number | null) {
+	async function handleFieldUpdate(
+		field: string,
+		value: string | number | null,
+	) {
 		if (!task) return;
 		await fetch(`/api/tasks/${task.id}`, {
 			method: "PUT",
@@ -121,12 +129,28 @@ export function TaskDetailSheet({
 
 	return (
 		<Sheet open={open} onOpenChange={onOpenChange}>
-			<SheetContent className="w-full overflow-y-auto sm:max-w-lg">
-				<SheetHeader>
-					<SheetTitle className="text-left text-lg">{task.title}</SheetTitle>
+			<SheetContent
+				side="right"
+				className="w-full sm:max-w-lg overflow-y-auto"
+			>
+				<SheetHeader className="px-6 pt-6">
+					<SheetTitle className="text-left text-lg pr-6">
+						{task.title}
+					</SheetTitle>
+					{task.project_name && (
+						<SheetDescription className="flex items-center gap-1.5 text-left">
+							<span
+								className="inline-block size-2 rounded-full"
+								style={{
+									backgroundColor: task.project_color || "#6366f1",
+								}}
+							/>
+							{task.project_name}
+						</SheetDescription>
+					)}
 				</SheetHeader>
 
-				<div className="mt-4 space-y-6">
+				<div className="space-y-6 px-6 pb-6">
 					{/* Status pills */}
 					<div className="flex flex-wrap gap-1.5">
 						{statusOptions.map((opt) => (
@@ -190,7 +214,9 @@ export function TaskDetailSheet({
 							<span className="text-sm text-muted-foreground">Priority</span>
 							<Select
 								value={task.priority}
-								onValueChange={(v) => v && handleFieldUpdate("priority", v)}
+								onValueChange={(v) =>
+									v && handleFieldUpdate("priority", v)
+								}
 							>
 								<SelectTrigger className="w-40">
 									<SelectValue />
@@ -220,21 +246,6 @@ export function TaskDetailSheet({
 									: "Not set"}
 							</span>
 						</div>
-
-						{task.project_name && (
-							<div className="flex items-center justify-between">
-								<span className="text-sm text-muted-foreground">Project</span>
-								<div className="flex items-center gap-2">
-									<div
-										className="size-2 rounded-full"
-										style={{
-											backgroundColor: task.project_color || "#6366f1",
-										}}
-									/>
-									<span className="text-sm">{task.project_name}</span>
-								</div>
-							</div>
-						)}
 					</div>
 
 					<Separator />
@@ -253,16 +264,16 @@ export function TaskDetailSheet({
 										avatarUrl={comment.user_avatar || undefined}
 										className="size-7 shrink-0"
 									/>
-									<div className="flex-1">
+									<div className="flex-1 min-w-0">
 										<div className="flex items-baseline gap-2">
-											<span className="text-sm font-medium">
+											<span className="text-sm font-medium truncate">
 												{comment.user_name}
 											</span>
-											<span className="text-xs text-muted-foreground">
+											<span className="text-xs text-muted-foreground shrink-0">
 												{getTimeAgo(comment.created_at)}
 											</span>
 										</div>
-										<p className="mt-0.5 text-sm text-muted-foreground">
+										<p className="mt-0.5 text-sm text-muted-foreground break-words">
 											{comment.content}
 										</p>
 									</div>
