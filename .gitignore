@@ -39,3 +39,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# sqlite database
+flowboard.db
+flowboard.db-wal
+flowboard.db-shm
